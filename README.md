@@ -1,10 +1,12 @@
 # mobi-to-txt-converter
 A Python script to convert all mobi files in current directory to txt files.
 
-**Dependencies**
+Tested with python 3.10
+
+**Dependencies**    
 mobi 0.3.3    
 html2text 2024.2.26    
 
-**To Install**     
+**To Install Dependencies**     
 pip install mobi    
 pip install html2text
