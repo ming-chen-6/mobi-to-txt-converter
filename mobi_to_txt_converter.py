@@ -3,35 +3,34 @@ import html2text
 import logging
 
 from os import listdir, getcwd, makedirs
-from os.path import isfile, join, dirname, splitext
-from pprint import pformat
+from os.path import isfile, join, dirname
+from pprint import pformat, pprint
 from sys import exit as sysexit
 
-from helper_funcs import fileIsMobi, getNoExtensionPath
+from helper_funcs import fileIsMobi, getNoExtensionPath, sysExitHelper
+from get_file_list import getFileList
+
+alowed_os_walk_mode = ['currdir','r']
 
 def main():     
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
-    # get all file name --- may add more mode in future
-    allfiles_currdir = [f for f in listdir('./') if isfile(join('./', f))]
-    logging.debug(f":\nAll files in dir:\n {allfiles_currdir}")
+    os_walk_mode = 'currdir'
+    rootdir = getcwd()
 
     # set file list, quit if no mobi file found
-    all_file_list = allfiles_currdir
-    
+    all_file_list = getFileList(os_walk_mode, rootdir)
+    logging.debug("All files in directory:\n" + pformat(all_file_list))
+
     # list all mobi files
-
-
-    mobi_list = list(map(fileIsMobi, all_file_list))
-    logging.debug(f":\nPre-cleaned file list:\n {mobi_list}")
-    cleaned_mobi_list = [curr_filename for curr_filename in mobi_list if curr_filename != ""]
-    # cleaned_mobi_list now stores all mobi files in dir
+    cleaned_mobi_list = [f for f in all_file_list if fileIsMobi(f)]
+    
+    # exit if no mobi file found
     if len(cleaned_mobi_list) == 0:
-        logging.info("\nNo Mobi File Found\n") 
-        _ = input("Press Any Key to EXIT") 
-        sysexit()
+        logging.info("\n\nNo Mobi File Found!")
+        sysExitHelper()
     
     logging.info("\nMobi Files found:\n"+pformat(cleaned_mobi_list))    
 
@@ -64,8 +63,7 @@ def main():
         logging.info("Finished")   
     logging.info("\n============================\nAll Conversion Jobs Complete\n============================")
 
-    _ = input("Press Any Key to EXIT") 
-    sysexit()
+    sysExitHelper()
 
 
 
