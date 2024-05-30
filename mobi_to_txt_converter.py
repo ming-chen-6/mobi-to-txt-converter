@@ -1,6 +1,7 @@
 import mobi
 import html2text
 import logging
+import time
 
 from os import listdir, getcwd, makedirs
 from os.path import isfile, join, dirname
@@ -8,7 +9,7 @@ from pprint import pformat, pprint
 from sys import exit as sysexit
 
 from helper_funcs import fileIsMobi, getNoExtensionPath, sysExitHelper
-from get_file_list import getFileList
+from get_file_list import getFileList, findFileByExtension
 
 alowed_os_walk_mode = ['currdir','r']
 
@@ -19,6 +20,7 @@ def main():
 
     os_walk_mode = 'currdir'
     rootdir = getcwd()
+    converted_file_save_mode = ""
 
     # set file list, quit if no mobi file found
     all_file_list = getFileList(os_walk_mode, rootdir)
@@ -26,7 +28,8 @@ def main():
 
     # list all mobi files
     cleaned_mobi_list = [f for f in all_file_list if fileIsMobi(f)]
-    
+
+
     # exit if no mobi file found
     if len(cleaned_mobi_list) == 0:
         logging.info("\n\nNo Mobi File Found!")
