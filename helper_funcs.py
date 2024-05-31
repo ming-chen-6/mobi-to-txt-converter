@@ -9,13 +9,7 @@ from sys import exit as sysexit
 
 def fileIsMobi(curr_filename:str):
     '''find if extension of a file is .mobi'''
-    return True if getExtension(curr_filename) == ".py" else False
-"""
-
-def fileIsMobi(curr_filename:str):
-    '''find if extension of a file is .mobi'''
-    return True if fnmatch(curr_filename, '*.py') else False
-"""
+    return True if getExtension(curr_filename) == ".mobi" else False
 
 def getExtension(curr_filepath):
     '''get extension of a file'''
@@ -32,7 +26,7 @@ def sysExitHelper():
 
 
 
-
+'''
 def timeChecker(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -44,7 +38,7 @@ def timeChecker(func):
         print(f"Finished {func.__name__} in {duration:.4f} seconds.")
         return result
     return wrapper
-
+'''
 
 
 if __name__=="__main__": 

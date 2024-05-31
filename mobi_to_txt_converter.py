@@ -9,7 +9,7 @@ from pprint import pformat, pprint
 from sys import exit as sysexit
 
 from helper_funcs import fileIsMobi, getNoExtensionPath, sysExitHelper
-from get_file_list import getFileList, findFileByExtension
+from get_file_list import getFileList
 
 alowed_os_walk_mode = ['currdir','r']
 
@@ -18,17 +18,17 @@ def main():
     logger.setLevel(logging.DEBUG)
     logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
-    os_walk_mode = 'currdir'
+    os_walk_mode = 'r'
     rootdir = getcwd()
     converted_file_save_mode = ""
 
     # set file list, quit if no mobi file found
     all_file_list = getFileList(os_walk_mode, rootdir)
-    logging.debug("All files in directory:\n" + pformat(all_file_list))
+    #logging.debug("All files in directory:\n" + pformat(all_file_list))
 
     # list all mobi files
     cleaned_mobi_list = [f for f in all_file_list if fileIsMobi(f)]
-
+    
 
     # exit if no mobi file found
     if len(cleaned_mobi_list) == 0:
@@ -55,9 +55,9 @@ def main():
         
         # create target dir for writing
         curr_name = getNoExtensionPath(curr_filename)
-        txt_filename = curr_name + '.txt'
-        curr_path = getcwd()
-        target_path = join(curr_path,"converted-files",txt_filename)
+        target_path = curr_name + '.txt'
+        #curr_path = getcwd()
+        #target_path = join(curr_path,"converted-files",txt_filename)
         logging.debug(f"target path: {target_path}")
         makedirs(dirname(target_path), exist_ok=True)
         # write to file
