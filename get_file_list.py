@@ -6,25 +6,29 @@ from os.path import isfile, join, dirname
 
 
 def getFileInCurrDir(rootdir: str)->list:
-    '''get abs path of all files under current directory. Folders are ignored.'''
+    '''get abs path of all files under current directory. Subfolders are ignored.'''
     return [join(rootdir, f) for f in listdir(rootdir) if isfile(join(rootdir, f))]
 
-def getFileInResursive(rootdir: str, all_file_list: list)->list:
-    '''get abs path of all files under current directory including files in sub folders.'''
+def getFileResursive(rootdir: str, all_file_list: list)->list:
+    '''get abs path of all files under current directory including files in subfolders.'''
     for f in listdir(rootdir):
         if isfile(join(rootdir, f)):
             all_file_list.append(join(rootdir, f))
         else:
-            getFileInResursive(join(rootdir, f), all_file_list)
+            getFileResursive(join(rootdir, f), all_file_list)
     return all_file_list
 
 def getFileList(walk_mode: str, rootdir: str)->list:
+    '''get abs path of all files based on walk_mode. 
+         walk_mode = "currdir": Subfolders are ignored.
+         walk_mode = "r": Subfolder files are included.
+    '''
     logger = logging.getLogger(__name__)
     allfiles_list = []
     match walk_mode:
         case "r":
             logger.info("retrieving files in recursive mode")
-            allfiles_list = getFileInResursive(rootdir,[])
+            allfiles_list = getFileResursive(rootdir,[])
         case "currdir":
             logger.info("retrieving files in current directory")
             allfiles_list = getFileInCurrDir(rootdir)
