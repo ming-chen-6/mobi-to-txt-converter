@@ -8,7 +8,7 @@ from os.path import isfile, join, dirname
 from pprint import pformat, pprint
 from sys import exit as sysexit
 
-from helper_funcs import fileIsMobi, getNoExtensionPath, sysExitHelper
+from helper_funcs import fileIsMobi, getNoExtensionPath, sysExitHelper, attentionMsgStrBuilder
 from get_file_list import getFileList
 
 alowed_os_walk_mode = ['currdir','r']
@@ -29,7 +29,6 @@ def main():
     # list all mobi files
     cleaned_mobi_list = [f for f in all_file_list if fileIsMobi(f)]
     
-
     # exit if no mobi file found
     if len(cleaned_mobi_list) == 0:
         logging.info("\n\nNo Mobi File Found!")
@@ -37,14 +36,14 @@ def main():
     
     logging.info("\nMobi Files found:\n"+pformat(cleaned_mobi_list))    
 
-    logging.info("\n======================\nStart Converting Files\n======================")
+    logging.info(attentionMsgStrBuilder("Start Converting Files"))
     # conversion loop
     for curr_filename in cleaned_mobi_list:
         logging.info(f"Converting File {curr_filename}")
-        tempdir, filepath = mobi.extract(curr_filename)  # extract file and get temp file path
-        logging.debug(tempdir)
-        temp_htmldir = join(tempdir, 'mobi7','book.html')
-        logging.debug(temp_htmldir)
+        tempdir = mobi.extract(curr_filename)[0]    # extract file and get temp file path
+        logging.debug(f"html temp file root: {tempdir}")
+        temp_htmldir = join(tempdir, 'mobi7','book.html')   # join path to get html file path
+        logging.debug(f"html temp file path: {temp_htmldir}")
 
         with open(temp_htmldir, mode="r", encoding="utf8") as f:  # read converted html
             data = f.read()
