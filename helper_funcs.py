@@ -1,13 +1,12 @@
-import logging
-import time
-import functools
-from fnmatch import fnmatch
-
 from os.path import splitext
 from sys import exit as sysexit
 
 
 def attentionMsgStrBuilder(message_str: str)->str:
+    '''add ### at front and end of input string,
+       and a line with =========... of the same length
+       as 
+    '''
     number_sign_added_str = "### " + message_str + " ###"
     dashes_with_newline = "\n" + "="*len(number_sign_added_str) + "\n"
     return dashes_with_newline + number_sign_added_str + dashes_with_newline
@@ -29,22 +28,6 @@ def sysExitHelper():
     _ = input("Press Any Key to EXIT") 
     sysexit()
 
-
-
-
-'''
-def timeChecker(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        start_time = time.time()
-        print(f"Starting {func.__name__}...")
-        result = func(*args, **kwargs)
-        end_time = time.time()
-        duration = end_time - start_time
-        print(f"Finished {func.__name__} in {duration:.4f} seconds.")
-        return result
-    return wrapper
-'''
 
 
 if __name__=="__main__": 

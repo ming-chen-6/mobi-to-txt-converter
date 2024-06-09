@@ -1,8 +1,7 @@
 import logging
 
-from glob import iglob
-from os import listdir, getcwd, makedirs
-from os.path import isfile, join, dirname
+from os import listdir
+from os.path import isfile, join
 
 
 def getFileInCurrDir(rootdir: str)->list:
@@ -40,26 +39,3 @@ def getFileList(walk_mode: str, rootdir: str)->list:
 
 if __name__=="__main__": 
     print()
-
-
-
-'''
-def findFileByExtensionOSwalkDeterminer(os_walk_mode: str)->bool:
-    return_val = False
-    logger = logging.getLogger(__name__)
-    match os_walk_mode:
-        case "r":
-            return_val = True
-            logger.info("matching files recursively")
-        case "currdir":
-            logger.info("matching files in current directory")
-        case _:
-            raise Exception("Invalid OS walk mode")    
-    print(return_val)
-    return return_val
-        
-
-def findFileByExtension(rootdir: str, ext: str, os_walk_mode: str = 'currdir')->list:
-    pattern = '**/*' + ext
-    return iglob(rootdir + pattern, recursive=findFileByExtensionOSwalkDeterminer(os_walk_mode))
-'''
