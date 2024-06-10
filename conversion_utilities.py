@@ -2,26 +2,37 @@ import logging
 import mobi
 import html2text
 
-from os import listdir, getcwd, makedirs
-from helper_funcs import attentionMsgStrBuilder
-from os.path import isfile, join, dirname, basename
-from sys import exit as sysexit
-from helper_funcs import fileIsMobi, getNoExtensionPath
+from os import makedirs
+from shutil import rmtree
+from os.path import join, dirname, basename
 
-def mobiToTxt(mobi_path, root_dir, oswalk_mode:str = "currdir", encoding:str = "utf8", save_path_mode:str = "together")->bool:
+from helper_funcs import attentionMsgStrBuilder, getNoExtensionPath
+
+def mobiToTxt(mobi_path, root_dir, encoding:str = "utf8", save_path_mode:str = "together", **kwargs)->bool:
+    '''
+    a helper function that convert mobi file at mobi_path to txt file by converting
+    mobit firstly to html and convert html to txt. 
+    '''
     logger = logging.getLogger(__name__)
-    mobi_path = mobi_path
-    oswalk_mode = oswalk_mode
-    encoding = encoding
-    save_path_mode = save_path_mode
+    if mobi_path in kwargs:
+        mobi_path = kwargs["mobi_path"]
+    if root_dir in kwargs:
+        mobi_path = kwargs["root_dir"]
+    if encoding in kwargs:
+        encoding = kwargs["encoding"]
+    if save_path_mode in kwargs:
+        save_path_mode = kwargs["save_path_mode"]
+    
+    logger.debug(f"start extracting html from mobi.")
     try:
         tempdir = mobi.extract(mobi_path)[0]    # extract file and get temp file path
     except Exception as e:
         logger.error(f"Failed to convert mobi to html for file {htmldir} \n{e}")    # return false if job fail
         logger.error(f"Job aborted due to mobi to html conversion failure.")
         return False 
-    logger.debug(f"finished extracting mobi file as html file")
+    logger.debug(f"finished extracting html from mobi file.")
 
+    logger.debug(f"start converting html to text.")
     htmldir = join(tempdir, 'mobi7','book.html')    # join path to get html file path
     logger.debug(f"html temp file root: {tempdir}")
     logger.debug(f"html temp file path: {htmldir}")
@@ -29,15 +40,23 @@ def mobiToTxt(mobi_path, root_dir, oswalk_mode:str = "currdir", encoding:str = "
     if not html2txt_success:    
         logger.error(f"Job aborted due to html to txt conversion failure.")     # return false if job fail
         return False
-    logger.debug(f"finished converting html file to txt file")
+    logger.debug(f"finished converting html file to txt file.")
 
+    logger.debug(f"start saving txt file.")
     save_path = getSavePath(mobi_path, root_dir, save_path_mode)
     savetxt_success = saveAsTxt(txt_data, save_path, "w+", encoding)
     if not savetxt_success:
         logger.error(f"Job aborted due to txt file writing failure.")     # return false if job fail
         return False
-    logger.debug(f"finished saving txt file")
-    # to-do: remove tempfiles, change get pwd everytime to using global var
+    logger.debug(f"finished saving txt file.")
+
+    logger.debug(f"start removing temp file.")      # remove temp files after job is done
+    try:
+        rmtree(tempdir)
+        logger.debug(f"finished removing temp file.")
+    except Exception as e:
+        logger.error(f"Failed to remove temp files at {tempdir} \n{e}")  
+        logger.error(f"Program continues without removing temp files.")
 
     return True
 
@@ -66,6 +85,7 @@ def htmlToTxt(htmldir, encoding: str = "utf8"):
 
 
 def getSavePath(file_path:str, root_dir:str, save_path_mode:str = "together") -> str:
+    ''' a helper function that returns abs path of the txt file to be saved. '''
     logger = logging.getLogger(__name__)
     match save_path_mode:
         case "together" | "t":

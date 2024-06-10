@@ -3,9 +3,9 @@ from sys import exit as sysexit
 
 
 def attentionMsgStrBuilder(message_str: str)->str:
-    '''add ### at front and end of input string,
-       and a line with =========... of the same length
-       as 
+    '''
+    add ### at front and end of input string, and a line with \n=========...\n 
+    of the same length as decorated input string before and after it.
     '''
     number_sign_added_str = "### " + message_str + " ###"
     dashes_with_newline = "\n" + "="*len(number_sign_added_str) + "\n"
