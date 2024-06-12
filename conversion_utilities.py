@@ -28,7 +28,7 @@ def mobiToTxt(mobi_path, root_dir, encoding:str = "utf8", save_path_mode:str = "
     try:
         tempdir = mobi.extract(mobi_path)[0]    # extract file and get temp file path
     except Exception as e:
-        logger.error(f"Failed to convert mobi to html for file {htmldir} \n{e}")    # return false if job fail
+        logger.error(f"Failed to convert mobi to html for file {mobi_path} \n{e}")    # return false if job fail
         logger.error(f"Job aborted due to mobi to html conversion failure.")
         return False 
     logger.debug(f"finished extracting html from mobi file.")
