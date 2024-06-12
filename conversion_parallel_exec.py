@@ -2,33 +2,37 @@ import mobi
 import time
 import logging
 import html2text
+import numpy as np
 
-from os import makedirs
+from os import makedirs, getcwd
 from shutil import rmtree
-from os.path import join, dirname, basename
+import multiprocessing as mp
+from os.path import join, dirname, basename, splitext
 
 from helper_funcs import attentionMsgStrBuilder, getNoExtensionPath
 
-def mobiToTxt(mobi_path, root_dir, encoding:str = "utf8", save_path_mode:str = "together", **kwargs)->bool:
+
+
+def mobiToTxtMPexec(job_list, root_dir, encoding:str = "utf8", save_path_mode:str = "together")->bool:
+    job_list_packed = [(j, root_dir, encoding, save_path_mode) for j in job_list]
+    with mp.Pool(mp.cpu_count()) as pool:
+        result = pool.map(mobiToTxtMPworker, job_list_packed)
+    return True
+
+
+def mobiToTxtMPworker(args)->bool:
     '''
     a helper function that convert mobi file at mobi_path to txt file by converting
     mobit firstly to html and convert html to txt. 
     '''
     logger = logging.getLogger(__name__)
-    if mobi_path in kwargs:
-        mobi_path = kwargs["mobi_path"]
-    if root_dir in kwargs:
-        root_dir = kwargs["root_dir"]
-    if encoding in kwargs:
-        encoding = kwargs["encoding"]
-    if save_path_mode in kwargs:
-        save_path_mode = kwargs["save_path_mode"]
-    
+    mobi_path, root_dir, encoding, save_path_mode, = args
+
     logger.debug(f"start extracting html from mobi.")
     try:
         tempdir = mobi.extract(mobi_path)[0]    # extract file and get temp file path
     except Exception as e:
-        logger.error(f"Failed to convert mobi to html for file {htmldir} \n{e}")    # return false if job fail
+        logger.error(f"Failed to convert mobi to html for file {mobi_path} \n{e}")    # return false if job fail
         logger.error(f"Job aborted due to mobi to html conversion failure.")
         return False 
     logger.debug(f"finished extracting html from mobi file.")
@@ -58,7 +62,7 @@ def mobiToTxt(mobi_path, root_dir, encoding:str = "utf8", save_path_mode:str = "
     except Exception as e:
         logger.error(f"Failed to remove temp files at {tempdir} \n{e}")  
         logger.error(f"Program continues without removing temp files.")
-
+    print(f"finished job {mobi_path}")
     return True
 
 
@@ -122,6 +126,25 @@ def saveAsTxt(txt_data, target_path: str, write_mode: str = "w+", encoding: str 
     return job_success    
 
 
-if __name__=="__main__": 
-    print()
+def attentionMsgStrBuilder(message_str: str)->str:
+    '''
+    add ### at front and end of input string, and a line with \n=========...\n 
+    of the same length as decorated input string before and after it.
+    '''
+    number_sign_added_str = "### " + message_str + " ###"
+    dashes_with_newline = "\n" + "="*len(number_sign_added_str) + "\n"
+    return dashes_with_newline + number_sign_added_str + dashes_with_newline
 
+
+def getNoExtensionPath(curr_filepath):
+    '''get file path without extension'''
+    return splitext(curr_filepath)[0]
+
+
+
+if __name__=="__main__": 
+
+    logger = logging.getLogger(__name__)
+    #mobiToTxtMPexec(test_list, getcwd())
+
+    print()

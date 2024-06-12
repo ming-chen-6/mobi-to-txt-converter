@@ -1,18 +1,21 @@
 import logging
-#import time
+import time
 
 from os import getcwd
 from pprint import pformat
 
 from helper_funcs import fileIsMobi, sysExitHelper, attentionMsgStrBuilder
 from get_file_list import getFileList
-from conversion_utilities import mobiToTxt
+from conversion_utilities import mobiToTxt, parallelMobiToTxt
 
 alowed_os_walk_mode = ['currdir','r']
 
 # to-do: add parse args
+#        add error record
 
 def main():     
+    start_time = time.time()
+    
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -37,13 +40,23 @@ def main():
     logging.info(attentionMsgStrBuilder("Start Converting Files"))
     
     # start conversion loop
-    for curr_file_path in cleaned_mobi_list:
-        logging.info(f"Converting File {curr_file_path}")
-        mobiToTxt(curr_file_path, root_dir, encoding, converted_file_save_mode)
-        logging.info(f"Conversion finished.")
+    parallel_exec = True
+    if parallel_exec:
+        parallelMobiToTxt(cleaned_mobi_list, root_dir, encoding, converted_file_save_mode)
+    else:
+        for curr_file_path in cleaned_mobi_list:
+            logging.info(f"Converting File {curr_file_path}")
+            mobiToTxt(curr_file_path, root_dir, encoding, converted_file_save_mode)
+            logging.info(f"Conversion finished.")
     logging.info(attentionMsgStrBuilder("All Conversion Jobs Finished."))
+
+    end_time = time.time()
+    print(end_time - start_time)
     sysExitHelper()
 
 
 if __name__=="__main__": 
+    
     main() 
+    
+    
